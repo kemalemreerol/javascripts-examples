@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" ></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" >
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" ></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/sc-2.0.7/sl-1.5.0/datatables.min.css"/>
+
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/sc-2.0.7/sl-1.5.0/datatables.min.js"></script>
+
+</head>
+<body>
+
+<div class="row justify-content-center">
+  <div class="col-10">
+    <div class="card shadow">
+      <div class="card-body">
+        <table class="table table-bordered table-hover table-striped w-100" id="t">
+          <thead class="bg-dark text-light">
+          <tr>
+            <th>Index</th>
+            <th>Başlık</th>
+            <th >Not</th>
+            <th class="text-center"></th>
+          </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer text-right bg-light">
+        <button type="button" id="btnLoc" class="btn btn-primary shadow">KONUM BUL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12 mt-3 text-center" id="divLoc">
+
+  </div>
+</div>
+
+
+
+
+
+    <form id="addForm">
+    <!-- Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add New Item</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label>Item Title</label>
+            <input type="text" class="form-control shadow-sm mb-3" id="add_baslik" name="add_baslik" required />
+
+            <label>Item Description</label>
+            <textarea class="form-control" id="add_icerik" name="add_icerik" style="height: 100px !important" required></textarea>
+          </div>
+          <div class="modal-footer">
+
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+
+
+<form id="updForm">
+  <input type="hidden" name="selNdx" id="selNdx" />
+  <!-- Modal -->
+  <div class="modal fade" id="updModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit Item</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label>Item Title</label>
+          <input type="text" class="form-control shadow-sm mb-3" id="upd_baslik" name="upd_baslik" required />
+
+          <label>Item Description</label>
+          <textarea class="form-control" id="upd_icerik" name="upd_icerik" style="height: 100px !important" required></textarea>
+        </div>
+        <div class="modal-footer">
+
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+</body>
+</html>
+<script>
+
+  $("#btnLoc").click(function()
+  {
+
+    if (navigator.geolocation)
+    {
+      navigator.geolocation.getCurrentPosition(function(pos)
+      {
+        console.log("Konum Bulundu : ", pos);
+        $("#divLoc").text("Location : "+pos.coords.latitude+","+pos.coords.longitude);
+      })
+    }
+    else
+    {
+      alert("GEO Loc Support Not found");
+    }
+    /*if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude +
+  "<br>Longitude: " + position.coords.longitude;
+}*/
+  })
+  /*
+  ToDo App
+  Kullanıcının Önüne Boş Bir Tablo Gelecek
+  Kullanıcı UI'daki Ekle Buttonuyla, Yeni Bir Modal Açıp
+  Yapılacak İşin Başlığını ve Metnini Girecek
+  Ve Bunu LocalStorage'a Ekleyecek
+
+  Her Ekleme / Güncelleme / Silme İşleminden Sonra UI (Tablo) Yenilenecek
+
+  Kullanıcı Tablodaki İstediği Kaydı Sil Buttonuyla Silebilecek
+  Ya da Satıra Tıklayıp Ayrı Bir Modal Üzerinden Güncelleyebilecek.
+
+   */
+
+  var t = null;
+
+  var items = [];
+
+
+  function updateLocalData()
+  {
+    localStorage.setItem("data", JSON.stringify(items));
+  }
+
+  function updateItemList()
+  {
+    var tmp = localStorage.getItem("data");
+    if (tmp == null)  items = [];
+
+    else items = JSON.parse(tmp);
+
+    console.log("TMP DATA : *"+tmp+"*");
+
+  }
+
+  function renderTable()
+  {
+    updateItemList();
+    // Tabloyu Temizle ve items Arrayindeki Her Bir elemanı
+    // Tabloda SAtir Olarak Göster
+    t.clear();
+    for (var i =  0; i < items.length; i++)
+    {
+      var o = items[i];
+      t.row.add([ i+1 , o.baslik, o.icerik, '<button type="button" rec_ndx="'+i+'" class="btnDel btn btn-danger shadow">Delete</button>']);
+    }
+
+    // Tabloyu Yeniden Çiz
+    t.draw(false);
+
+    $(".btnDel").off('click');
+    $(".btnDel").click(function(e)
+    {
+      e.stopPropagation();
+      console.log("del clicked");
+      var o = confirm("Are You Sure To Delete Selected Item ?");
+      if (o)
+      {
+        var ndx = $(this).attr('rec_ndx');
+        // items arrayinden ndx. elemanı sil
+        // ve renderTable'i cagir
+        items.splice(ndx,1);
+        updateLocalData();
+        renderTable();
+      }
+    });
+
+
+  }
+
+  $(document).ready(function()
+  {
+
+
+
+    t = $("#t").DataTable(
+            {
+              dom : 'Bfrtip',
+
+              buttons : [
+                'colvis',
+                'excelHtml5',
+                { text: "Add New Item", action: function()
+                  {
+                    $("#addModal").modal('show');
+                  }}
+              ]
+            }
+    );
+
+
+
+    /*
+    $('#example tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        alert('You clicked on ' + data[0] + "'s row");
+    });
+     */
+
+    $("#t tbody").on('click', 'tr', function()
+    {
+      var data = t.row(this).data();
+      var selectedIndex = data[0];
+      console.log("Seçilen Index : ",selectedIndex);
+
+      $("#selNdx").val(selectedIndex);
+      $("#upd_baslik").val(data[1]);
+      $("#upd_icerik").val(data[2]);
+      $("#updModal").modal('show');
+    })
+
+      renderTable();
+  })
+
+  $("#updForm").submit(function(e)
+  {
+    e.stopPropagation();
+
+    // Form Verisini Al
+    var ndx = $("#selNdx").val();
+    var obj=
+            {
+              baslik : $("#upd_baslik").val(),
+              icerik : $("#upd_icerik").val()
+            };
+    items[ndx] = obj;
+    updateLocalData();
+    renderTable();
+    $("#updModal").modal('hide');
+
+    return false;
+  })
+
+  $("#addForm").submit(function(e)
+  {
+    e.stopPropagation();
+
+    // Form Verisini Al
+    var obj=
+    {
+      baslik : $("#add_baslik").val(),
+      icerik : $("#add_icerik").val()
+    };
+
+
+    items.push(obj);
+    updateLocalData();
+    renderTable();
+
+    // Formu Temizle
+    $("#add_baslik").val('');
+    $("#add_icerik").val('');
+
+    $("#addModal").modal('hide');
+
+    return false;
+  });
+</script>
+
+<style>
+  th,td { vertical-align: middle !important;}
+</style>

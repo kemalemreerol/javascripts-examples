@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" />
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <script src="js/bootstrap.bundle.js"></script>
+</head>
+<body>
+
+
+
+</body>
+<script>
+
+    function sayHi()
+    {
+        console.log("Merhaba");
+    }
+
+    // Sayfaya Ait tüm kaynaklar
+    // yüklendikten sonra çalıştırılır
+    $(document).ready(function()
+    {
+        console.log("Sayfa Yüklendi");
+
+        // Bir süre bekleyip bir işlem yapacaksanız
+        setTimeout(function()
+        {
+            console.log("Lazy Loading Done");
+        }, 3000);
+
+
+        // Bir işlemi belirli aralıklarla
+        // tekrar etmek için setInterval Kullanılır
+        setInterval(function()
+        {
+            console.log("Merhaba")
+        }, 5000);
+    });
+</script>
+</html>

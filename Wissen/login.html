@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" ></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" >
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" ></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/sc-2.0.7/sl-1.5.0/datatables.min.css"/>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.13.1/b-2.3.3/b-colvis-2.3.3/b-html5-2.3.3/sc-2.0.7/sl-1.5.0/datatables.min.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBAG-Y2zRlMddh2tb0FN3AdCmhdM73PmAo",
+      authDomain: "csicx-vscode.firebaseapp.com",
+      databaseURL: "https://csicx-vscode-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "csicx-vscode",
+      storageBucket: "csicx-vscode.appspot.com",
+      messagingSenderId: "356638218665",
+      appId: "1:356638218665:web:30218f5bf32c52a7cf0cb8",
+      measurementId: "G-T4ZMBD1PQS"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+
+
+  </script>
+</head>
+<body>
+
+  <div class="row justify-content-center">
+    <div class="col-6">
+
+      <form id="fRegister">
+        <div class="card">
+          <div class="card-body">
+            <h4>User Registration</h4>
+            <label>Username : </label>
+            <input type="email" class="form-control mb-3" id="reg_un" />
+
+            <label>Password : </label>
+            <input type="password" class="form-control mb-3" id="reg_pw" />
+          </div>
+          <div class="card-footer text-light  text-right bg-light">
+            <button type="submit" class="btn btn-primary">REGISTER</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row  mt-5 justify-content-center loginDiv" style="display: none">
+    <div class="col-6">
+
+      <form id="fLogin">
+        <div class="card">
+          <div class="card-body">
+            <h4>User Login</h4>
+            <label>Username : </label>
+            <input type="email" class="form-control mb-3" id="login_un" />
+
+            <label>Password : </label>
+            <input type="password" class="form-control mb-3" id="login_pw" />
+          </div>
+          <div class="card-footer text-light  text-right bg-light">
+            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary">RESET PASSWORD</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="row justify-content-center panelDiv" style="display: none">
+    <div class="col-6">
+
+
+      <span id="curr_user_info"></span><br>
+      <button id="btnLogout" class="btn btn-secondary">LOGOUT</button>
+    </div>
+  </div>
+
+
+
+
+
+</body>
+</html>
+
+<script>
+
+  var currUser = null;
+
+  $("#fResetPW").submit(function(e)
+  {
+
+    e.preventDefault();
+    auth.sendPasswordResetEmail($("#fpw_un").val())
+            .then(function()
+            {
+              alert("Please Check Your Inbox");
+
+            })
+            .catch(function(err)
+            {
+              alert("ERROR : "+ err.message);
+            });
+    return false;
+  });
+
+  $("#fRegister").submit(function(e)
+  {
+    e.preventDefault();
+
+    var un = $("#reg_un").val();
+    var pw = $("#reg_pw").val();
+
+    auth.createUserWithEmailAndPassword(un, pw)
+            .then(function(userCredential)
+            {
+              alert("Account Registered And Logged In");
+            })
+            .catch(function(err)
+            {
+              alert("Registration Error : "+err.message);
+            });
+
+
+    return false;
+  })
+
+  $("#fLogin").submit(function(e)
+  {
+    e.preventDefault();
+
+    var un = $("#login_un").val();
+    var pw = $("#login_pw").val();
+
+    auth.signInWithEmailAndPassword(un, pw)
+            .then(function(userCredential)
+            {
+              alert("Account Logged In");
+            })
+            .catch(function(err)
+            {
+              alert("Login Error : "+err.message);
+            });
+
+
+    return false;
+  })
+
+
+  $("#btnLogout").click(function()
+  {
+    auth.signOut();
+  })
+
+  auth.onAuthStateChanged((user) =>
+  {
+
+    currUser = user;
+    if (user)
+    {
+      console.log("User Logged In");
+      console.log(user);
+      $(".panelDiv").show();
+      $(".loginDiv").hide();
+
+      location.href = "main.html";
+    } else {
+      console.log("User Not Logged In");
+      $(".panelDiv").hide();
+      $(".loginDiv").show();
+    }
+
+
+  });
+
+</script>
